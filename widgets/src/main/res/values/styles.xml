@@ -4,7 +4,13 @@
     <style name="DialogButton">
         <item name="android:textSize">14sp</item>
         <item name="android:background">@drawable/selector_btn_rectangle_feed_back</item>
-        <item name="android:layout_height">22dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:textColor">@color/dialog_button_normal</item>
     </style>
 
     <!--底部弹窗动画样式-->

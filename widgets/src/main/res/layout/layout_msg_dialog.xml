@@ -36,19 +36,16 @@
         android:layout_height="wrap_content"
         android:gravity="right"
         android:orientation="horizontal">
-
-        <androidx.appcompat.widget.AppCompatButton
+        <!--这里的按钮采用TextView而不是用Button的原因是Button内部会有默认的背景，自带宽高，不好格式化-->
+        <TextView
             android:visibility="gone"
             android:id="@+id/btn_cancel"
             style="@style/DialogButton"
-            android:layout_width="wrap_content"
             android:textColor="@color/dialog_button_cancel" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <TextView
             android:id="@+id/btn_submit"
-            style="@style/DialogButton"
-            android:layout_width="wrap_content"
-            android:textColor="@color/dialog_button_normal" />
+            style="@style/DialogButton"/>
     </LinearLayout>
 
 
