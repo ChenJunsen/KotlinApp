@@ -51,6 +51,7 @@ public class MsgDialog extends BaseDialogFragment implements View.OnClickListene
         setMsg(msg);
         setBtnTextSubmit(btnTextSubmit);
         setBtnTextCancel(btnTextCancel);
+        setDialogStyle(dialogStyle);
         btn_submit.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
     }

@@ -255,7 +255,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
     }
 
     /**
-     * 窗体构建器基类
+     * BaseDialogFragment
      * @author JasonChen
      * @email chenjunsen@outlook.com
      * @createTime 2021/9/17 15:26
