@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--通用弹窗按钮样式-->
+    <style name="DialogButton">
+        <item name="android:textSize">14sp</item>
+        <item name="android:background">@drawable/selector_btn_rectangle_feed_back</item>
+        <item name="android:layout_height">22dp</item>
+    </style>
+
+    <!--底部弹窗动画样式-->
+    <style name="BottomWindowAnim" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/push_bottom_in</item>
+        <item name="android:windowExitAnimation">@anim/push_bottom_out</item>
+    </style>
+</resources>
