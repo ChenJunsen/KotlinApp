@@ -229,7 +229,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
          * 你会好奇为什么要写这个方法。因为Fragment创建和内部Dialog创建是两个过程，后者要晚一些。
          * 在以链式方式调用时，此时的{@link #getDialog()}是空的，所以需要这个方法来进行延时操作
          *
-         * @param dialog 创建好的窗体
+         * @param dialog dialogFragment内部的实际窗体
          */
         void onDialogCreated(Dialog dialog);
     }
@@ -255,7 +255,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
     }
 
     /**
-     * BaseDialogFragment
+     * 链式写法构造器基类
      * @author JasonChen
      * @email chenjunsen@outlook.com
      * @createTime 2021/9/17 15:26
@@ -287,12 +287,16 @@ public abstract class BaseDialogFragment extends DialogFragment {
             return (B) this;
         }
 
-
+        /**
+         * 将前面填写的参数构造进dialogFragment实体内，如需显示，还要调用相关的show方法
+         * @return
+         */
         public D build() {
+            dialog.setCancelable(cancelable);
             dialog.setOnDialogCreatedListener(new OnDialogCreatedListener() {
                 @Override
                 public void onDialogCreated(Dialog dialog) {
-                    dialog.setCancelable(cancelable);
+//                    dialog.setCancelable(cancelable); //在dialogFragment中调用内置窗体的cancelable是没有效果的，必须调用dialogFragment本身的
                     dialog.setCanceledOnTouchOutside(outsideCancelable);
                 }
             });
