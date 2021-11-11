@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:padding="10dp"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".EditTestActivity">
+    <!--<EditText
+        android:id="@+id/ed"
+        android:imeOptions="actionSearch"
+        android:maxLines="1"
+        android:inputType="text"
+        android:hint="这是一个测试edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:baselineAligned="false"
+        android:layout_height="100dp">
+        <TextView
+            android:id="@+id/ed1"
+            android:layout_height="50dp"
+            android:layout_width="50dp"
+            android:text="123"
+            android:background="@color/cyan"/>
+        <TextView
+            android:id="@+id/ed2"
+            android:layout_height="50dp"
+            android:layout_width="50dp"
+            android:text="456"
+            android:padding="10dp"
+            android:background="@color/cyan"/>
+    </LinearLayout>
+</LinearLayout>

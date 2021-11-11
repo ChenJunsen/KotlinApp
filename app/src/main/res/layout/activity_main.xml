@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.cjs.ultraflowlayout.UltraFlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".MainActivity">
+
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:tag="123"
         android:text="单按钮弹窗" />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -19,5 +20,17 @@
         android:layout_height="wrap_content"
         android:text="双按钮弹窗" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/ed_keyboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="EditText按键监听测试"/>
 
-</LinearLayout>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_tp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="线程池模拟"/>
+
+
+</com.cjs.ultraflowlayout.UltraFlowLayout>
