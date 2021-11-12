@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import java.lang.annotation.Retention;
@@ -170,10 +171,10 @@ public class UltraFlowLayout extends ViewGroup {
             //需要注意的是，实际摆放需要考虑margin值。因为我们每个子View已经算出了总的占用空间，这个空间包含了margin.而视觉上是看不见margin的，所以实际摆放要去除这个空间的margin值
             int l = currentRowWidth + childMarginLeft;
             int t = currentRowTop + childMarginTop;
-            currentRowWidth += _childWidth;
             int r = l + childWidth;
             int b = t + childHeight;
-            child.setTag(new Rect(l, t, r, b));//这里用到了一个技巧 因为layout时要传入左上右下四个数值，恰好系统的Rect就是存这四个值的模型
+            currentRowWidth += _childWidth;
+            child.setTag(new RectX(l, t, r, b, rows, i));//这里用到了一个技巧 因为layout时要传入左上右下四个数值，恰好系统的Rect就是存这四个值的模型。但是系统的Rect不能满足需求且不能被继承，所以仿写一个
             if (i == childCount - 1) {//还需要注意的是，如果没换行，但是测完了，此时也要标记一下当前行的行高
                 maxHeightArray.put(rows, currentRowMaxHeight);
             }
@@ -183,13 +184,31 @@ public class UltraFlowLayout extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        //因为measure阶段已经将所有的子View顶点位置标记出来了，所以布局阶段就很简单了，直接取出标记进行摆放
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
             View child = getChildAt(i);
-            Rect rec = (Rect) child.getTag();
-            Log.d("FlowXX", String.format("[%1$s,%2$s]", rec.right - rec.left, rec.bottom - rec.top));
-            child.layout(rec.left, rec.top, rec.right, rec.bottom);
+            RectX rec = (RectX) child.getTag();
+            Log.d("FlowXX", rec.toWHString());
+            if (ALIGN_TOP == align) {
+                //因为measure阶段已经将所有的子View顶点位置标记出来了，所以如果是默认对齐方式，布局阶段就很简单了，直接取出标记进行摆放
+                child.layout(rec.left, rec.top, rec.right, rec.bottom);
+            } else {
+                int rowMaxHeight = maxHeightArray.get(rec.row);
+                int childHeight = child.getMeasuredHeight();
+                MarginLayoutParams mlp = (MarginLayoutParams) child.getLayoutParams();
+                int childMarginTop = mlp.topMargin;
+                int t0 = 0, b0 = 0;
+                if (ALIGN_CENTER == align) {
+                    int centerOffset = (rowMaxHeight - childHeight) / 2;//计算出居中偏移量
+                    t0 = rec.top + centerOffset + childMarginTop;//在默认顶部居中模式下向下偏移
+                    b0 = t0 + childHeight;
+                } else if (ALIGN_BOTTOM == align) {
+                    int bottomOffset = rowMaxHeight - childHeight;//计算出底部对齐偏移量
+                    t0 = rec.top + bottomOffset + childMarginTop;//在默认顶部居中模式下向下偏移
+                    b0 = t0 + childHeight;
+                }
+                child.layout(rec.left, t0, rec.right, b0);
+            }
         }
     }
 
@@ -206,5 +225,59 @@ public class UltraFlowLayout extends ViewGroup {
     @Retention(RetentionPolicy.SOURCE)
     public @interface Align {
 
+    }
+
+
+    /**
+     * 因为系统的{@link Rect}为final方法，不能被继承改写，所以特此自定义该类，增加元素行列属性
+     *
+     * @author JasonChen
+     * @email chenjunsen@outlook.com
+     * @createTime 2021/11/12 13:56
+     */
+    public static class RectX {
+
+        public int left, top, right, bottom, row, column;
+
+        /**
+         * 构建坐标信息
+         *
+         * @param left   左
+         * @param top    上
+         * @param right  右
+         * @param bottom 下
+         * @param row    所在行数(从零开始)
+         * @param column 所在列数(从零开始)
+         */
+        public RectX(int left, int top, int right, int bottom, int row, int column) {
+            this.left = left;
+            this.top = top;
+            this.right = right;
+            this.bottom = bottom;
+            this.row = row;
+            this.column = column;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return "RectX{" +
+                    "left=" + left +
+                    ", top=" + top +
+                    ", right=" + right +
+                    ", bottom=" + bottom +
+                    ", row=" + row +
+                    ", column=" + column +
+                    '}';
+        }
+
+        /**
+         * 返回元素长宽及坐标信息
+         *
+         * @return 格式化后的信息
+         */
+        public String toWHString() {
+            return String.format("位置信息:[%1$s,%2$s] 长度:%3$s 宽度:%4$s", row, column, right - left, bottom - top);
+        }
     }
 }
