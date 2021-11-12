@@ -1,6 +1,7 @@
 package com.cjs.ultraflowlayout;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -9,7 +10,11 @@ import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * 自定义流式布局
@@ -19,23 +24,69 @@ import androidx.annotation.RequiresApi;
  * @createTime 2021/11/11 17:18
  */
 public class UltraFlowLayout extends ViewGroup {
+    /**
+     * 子View顶部对齐(默认)
+     */
+    public static final int ALIGN_TOP = 0;
+    /**
+     * 子View居中对齐
+     */
+    public static final int ALIGN_CENTER = 1;
+    /**
+     * 子View底部对齐
+     */
+    public static final int ALIGN_BOTTOM = 2;
+    /**
+     * 标记每行的最大高度 并以此作为行高
+     */
+    private SparseIntArray maxHeightArray;
+
+    /**
+     * 子View的对齐方式
+     */
+    private @Align
+    int align = ALIGN_TOP;
+    /**
+     * 子View之间通用的间距，可以与其margin值叠加
+     */
+    private int gap;
+
     public UltraFlowLayout(Context context) {
         super(context);
+        initAttr(context, null, 0, 0);
     }
 
     public UltraFlowLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initAttr(context, attrs, 0, 0);
     }
 
     public UltraFlowLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        initAttr(context, attrs, defStyleAttr, 0);
     }
-
-    private SparseIntArray maxHeightArray;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public UltraFlowLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        initAttr(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    /**
+     * 初始化控件属性
+     *
+     * @param context      _
+     * @param attrs        _
+     * @param defStyleAttr _
+     * @param defStyleRes  _
+     */
+    private void initAttr(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        if (attrs != null) {
+            TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.UltraFlowLayout, defStyleAttr, defStyleRes);
+            gap = array.getDimensionPixelOffset(R.styleable.UltraFlowLayout_gap, 0);
+            align = array.getInt(R.styleable.UltraFlowLayout_align, ALIGN_TOP);
+            array.recycle();
+        }
     }
 
     @Override
@@ -104,8 +155,9 @@ public class UltraFlowLayout extends ViewGroup {
             int childMarginBottom = mlp.bottomMargin;
             int childWidth = child.getMeasuredWidth();
             int childHeight = child.getMeasuredHeight();
+            int _childWidth = childMarginLeft + childWidth + childMarginRight;
             int _childHeight = childMarginTop + childHeight + childMarginBottom;//child实际占用的高度空间，需要加上上下间距值
-            if (currentRowWidth + childWidth > widthMax) {//换行
+            if (currentRowWidth + _childWidth > widthMax) {//换行
                 maxHeightArray.put(rows, currentRowMaxHeight);//换行时，先标记一下之前行的最大高度。哪个子元素的高度最大就去其作为行高
                 currentRowTop += currentRowMaxHeight;//标记下一行起始绘制的top
                 rows++;//行计数器自增，偏移至下一行
@@ -115,11 +167,12 @@ public class UltraFlowLayout extends ViewGroup {
             //默认状态
             currentRowMaxHeight = Math.max(currentRowMaxHeight, _childHeight);//当前child的实际占高与当前已经存在的最大行高作比较，取大的那个作为新行高
             //接下来就是获取这个child的左上角及右下角点坐标的位置了
-            int l = currentRowWidth;
-            int t = currentRowTop;
-            currentRowWidth += (childMarginLeft + childWidth + childMarginRight);
-            int r = currentRowWidth;
-            int b = t + _childHeight;
+            //需要注意的是，实际摆放需要考虑margin值。因为我们每个子View已经算出了总的占用空间，这个空间包含了margin.而视觉上是看不见margin的，所以实际摆放要去除这个空间的margin值
+            int l = currentRowWidth + childMarginLeft;
+            int t = currentRowTop + childMarginTop;
+            currentRowWidth += _childWidth;
+            int r = l + childWidth;
+            int b = t + childHeight;
             child.setTag(new Rect(l, t, r, b));//这里用到了一个技巧 因为layout时要传入左上右下四个数值，恰好系统的Rect就是存这四个值的模型
             if (i == childCount - 1) {//还需要注意的是，如果没换行，但是测完了，此时也要标记一下当前行的行高
                 maxHeightArray.put(rows, currentRowMaxHeight);
@@ -144,5 +197,14 @@ public class UltraFlowLayout extends ViewGroup {
     public LayoutParams generateLayoutParams(AttributeSet attrs) {
         //关键步骤 使得能把child的layoutParam转换为MarginLayoutParam
         return new MarginLayoutParams(getContext(), attrs);
+    }
+
+    /**
+     * 子控件的对齐方式限制
+     */
+    @IntDef({ALIGN_TOP, ALIGN_CENTER, ALIGN_BOTTOM})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Align {
+
     }
 }
