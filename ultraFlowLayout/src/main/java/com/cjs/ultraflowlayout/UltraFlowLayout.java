@@ -107,7 +107,7 @@ public class UltraFlowLayout extends ViewGroup {
             int _childHeight = childMarginTop + childHeight + childMarginBottom;//child实际占用的高度空间，需要加上上下间距值
             if (currentRowWidth + childWidth > widthMax) {//换行
                 maxHeightArray.put(rows, currentRowMaxHeight);//换行时，先标记一下之前行的最大高度。哪个子元素的高度最大就去其作为行高
-                currentRowTop += _childHeight;//标记下一行起始绘制的top
+                currentRowTop += currentRowMaxHeight;//标记下一行起始绘制的top
                 rows++;//行计数器自增，偏移至下一行
                 currentRowWidth = 0;//重置行宽
                 currentRowMaxHeight = 0;//重制行最大高度
