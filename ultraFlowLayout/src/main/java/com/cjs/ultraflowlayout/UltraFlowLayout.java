@@ -59,7 +59,7 @@ public class UltraFlowLayout extends ViewGroup {
     private int measureHeight(int heightMeasureSpec) {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         if (heightMode != MeasureSpec.EXACTLY) {
-            //精确模式下的高度累计就是把所有行的最大高度加起来就行了
+            //非精确模式下的高度累计就是把所有行的最大高度加起来就行了
             int totalHeight = 0;//累计高度
             for (int row = 0; row < maxHeightArray.size(); row++) {
                 totalHeight += maxHeightArray.get(row);
@@ -106,7 +106,7 @@ public class UltraFlowLayout extends ViewGroup {
             int childHeight = child.getMeasuredHeight();
             int _childHeight = childMarginTop + childHeight + childMarginBottom;//child实际占用的高度空间，需要加上上下间距值
             if (currentRowWidth + childWidth > widthMax) {//换行
-                maxHeightArray.put(rows, currentRowMaxHeight);//换行时，先标记一下当前行的最大高度。哪个子元素的高度最大就去其作为行高
+                maxHeightArray.put(rows, currentRowMaxHeight);//换行时，先标记一下之前行的最大高度。哪个子元素的高度最大就去其作为行高
                 currentRowTop += _childHeight;//标记下一行起始绘制的top
                 rows++;//行计数器自增，偏移至下一行
                 currentRowWidth = 0;//重置行宽
@@ -121,6 +121,9 @@ public class UltraFlowLayout extends ViewGroup {
             int r = currentRowWidth;
             int b = t + _childHeight;
             child.setTag(new Rect(l, t, r, b));//这里用到了一个技巧 因为layout时要传入左上右下四个数值，恰好系统的Rect就是存这四个值的模型
+            if (i == childCount - 1) {//还需要注意的是，如果没换行，但是测完了，此时也要标记一下当前行的行高
+                maxHeightArray.put(rows, currentRowMaxHeight);
+            }
         }
         return widthMeasureSpec;
     }
