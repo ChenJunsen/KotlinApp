@@ -230,6 +230,7 @@ public class UltraFlowLayout extends ViewGroup {
      *
      * @return {@link #ALIGN_TOP}、{@link #ALIGN_CENTER}、{@link #ALIGN_BOTTOM}
      */
+    @SuppressWarnings("unused")
     public @Align
     int getAlign() {
         return align;
@@ -250,6 +251,7 @@ public class UltraFlowLayout extends ViewGroup {
      *
      * @return 每行第一个没有间距
      */
+    @SuppressWarnings("unused")
     public int getGapHorizontal() {
         return gapHorizontal;
     }
@@ -269,6 +271,7 @@ public class UltraFlowLayout extends ViewGroup {
      *
      * @return 纵向间距
      */
+    @SuppressWarnings("unused")
     public int getGapVertical() {
         return gapVertical;
     }
@@ -279,8 +282,10 @@ public class UltraFlowLayout extends ViewGroup {
      *
      * @param gapVertical 纵向间距 像素
      */
+    @SuppressWarnings("unused")
     public void setGapVertical(int gapVertical) {
         this.gapVertical = gapVertical;
+        requestLayout();
     }
 
     /**
@@ -341,6 +346,7 @@ public class UltraFlowLayout extends ViewGroup {
          *
          * @return 格式化后的信息
          */
+        @SuppressWarnings("unused")
         public String toWHString() {
             return String.format("位置信息:[%1$s,%2$s] 长度:%3$s 宽度:%4$s", row, column, right - left, bottom - top);
         }
