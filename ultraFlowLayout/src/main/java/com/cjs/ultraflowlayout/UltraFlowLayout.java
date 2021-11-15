@@ -2,6 +2,7 @@ package com.cjs.ultraflowlayout;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -52,6 +53,8 @@ public class UltraFlowLayout extends ViewGroup {
      */
     private int gap;
 
+    private int widthMeasureSpec, heightMeasureSpec;
+
     public UltraFlowLayout(Context context) {
         super(context);
         initAttr(context, null, 0, 0);
@@ -92,6 +95,7 @@ public class UltraFlowLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        Log.d("FlowXX", "onMeasure");
         //1、关键步骤 测量所有子view 这样，后续才能从子view获取measuredWidth和measuredHeight
         measureChildren(widthMeasureSpec, heightMeasureSpec);
         //2、测量行宽 同时标记每行最大高度
@@ -146,6 +150,7 @@ public class UltraFlowLayout extends ViewGroup {
         int currentRowWidth = getPaddingLeft();//当前行的累计宽度 默认算了padding
         int currentRowTop = getPaddingTop();//当前行的起始高度
         int currentRowMaxHeight = 0;//当前行的最大高度
+        int currentColumnNo = 0;//当前子View在其所在行的第几列
         for (int i = 0; i < childCount; i++) {
             View child = getChildAt(i);
             //由于我们重写了generateLayoutParams方法，所以可以强转子view的布局参数为MarginLayoutParams
@@ -156,39 +161,43 @@ public class UltraFlowLayout extends ViewGroup {
             int childMarginBottom = mlp.bottomMargin;
             int childWidth = child.getMeasuredWidth();
             int childHeight = child.getMeasuredHeight();
-            int _childWidth = childMarginLeft + childWidth + childMarginRight;
+            int _childWidth = childMarginLeft + childWidth + childMarginRight + (currentColumnNo != 0 ? gap : 0);
             int _childHeight = childMarginTop + childHeight + childMarginBottom;//child实际占用的高度空间，需要加上上下间距值
             if (currentRowWidth + _childWidth > widthMax) {//换行
                 maxHeightArray.put(rows, currentRowMaxHeight);//换行时，先标记一下之前行的最大高度。哪个子元素的高度最大就去其作为行高
                 currentRowTop += currentRowMaxHeight;//标记下一行起始绘制的top
                 rows++;//行计数器自增，偏移至下一行
                 currentRowWidth = 0;//重置行宽
-                currentRowMaxHeight = 0;//重制行最大高度
+                currentRowMaxHeight = 0;//重置行最大高度
+                currentColumnNo = 0;//重置列数
+                _childWidth = childMarginLeft + childWidth + childMarginRight;//关键点 换行时，重新计算这个child的实际占用宽度，这个宽在下面代码中会被复用。换行之前可能加上了gap，但是不一定那行放得下。换行后，从第一个开始，肯定是不要gap的。
             }
             //默认状态
             currentRowMaxHeight = Math.max(currentRowMaxHeight, _childHeight);//当前child的实际占高与当前已经存在的最大行高作比较，取大的那个作为新行高
             //接下来就是获取这个child的左上角及右下角点坐标的位置了
             //需要注意的是，实际摆放需要考虑margin值。因为我们每个子View已经算出了总的占用空间，这个空间包含了margin.而视觉上是看不见margin的，所以实际摆放要去除这个空间的margin值
-            int l = currentRowWidth + childMarginLeft;
+            int l = currentRowWidth + childMarginLeft + (currentColumnNo != 0 ? gap : 0);
             int t = currentRowTop + childMarginTop;
             int r = l + childWidth;
             int b = t + childHeight;
             currentRowWidth += _childWidth;
-            child.setTag(new RectX(l, t, r, b, rows, i));//这里用到了一个技巧 因为layout时要传入左上右下四个数值，恰好系统的Rect就是存这四个值的模型。但是系统的Rect不能满足需求且不能被继承，所以仿写一个
+            child.setTag(new RectX(l, t, r, b, rows, currentColumnNo));//这里用到了一个技巧 因为layout时要传入左上右下四个数值，恰好系统的Rect就是存这四个值的模型。但是系统的Rect不能满足需求且不能被继承，所以仿写一个
             if (i == childCount - 1) {//还需要注意的是，如果没换行，但是测完了，此时也要标记一下当前行的行高
                 maxHeightArray.put(rows, currentRowMaxHeight);
             }
+            currentColumnNo++;//累加列数
         }
         return widthMeasureSpec;
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        Log.d("FlowXX", "onLayout");
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
             View child = getChildAt(i);
             RectX rec = (RectX) child.getTag();
-            Log.d("FlowXX", rec.toWHString());
+            Log.d("FlowXX", rec.toString());
             if (ALIGN_TOP == align) {
                 //因为measure阶段已经将所有的子View顶点位置标记出来了，所以如果是默认对齐方式，布局阶段就很简单了，直接取出标记进行摆放
                 child.layout(rec.left, rec.top, rec.right, rec.bottom);
@@ -213,9 +222,54 @@ public class UltraFlowLayout extends ViewGroup {
     }
 
     @Override
+    protected void onDraw(Canvas canvas) {
+        Log.d("FlowXX", "onDraw");
+        super.onDraw(canvas);
+    }
+
+    @Override
     public LayoutParams generateLayoutParams(AttributeSet attrs) {
         //关键步骤 使得能把child的layoutParam转换为MarginLayoutParam
         return new MarginLayoutParams(getContext(), attrs);
+    }
+
+    /**
+     * 获取当前子View的对齐方式
+     *
+     * @return {@link #ALIGN_TOP}、{@link #ALIGN_CENTER}、{@link #ALIGN_BOTTOM}
+     */
+    public @Align
+    int getAlign() {
+        return align;
+    }
+
+    /**
+     * 设置对齐方式
+     *
+     * @param align {@link #ALIGN_TOP}、{@link #ALIGN_CENTER}、{@link #ALIGN_BOTTOM}
+     */
+    public void setAlign(@Align int align) {
+        this.align = align;
+        requestLayout();//requestLayout会重新调用onMeasure和onLayout
+    }
+
+    /**
+     * 获取子View之间的通用间距
+     *
+     * @return 每行第一个没有间距
+     */
+    public int getGap() {
+        return gap;
+    }
+
+    /**
+     * 设置间距
+     *
+     * @param gap 每行第一个没有间距,可以用padding设置
+     */
+    public void setGap(int gap) {
+        this.gap = gap;
+        requestLayout();
     }
 
     /**

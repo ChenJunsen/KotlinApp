@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="UltraFlowLayout">
+        <!--子View的对其方式 只有一行中出现高度不同的元素时，才会有视觉上的不同-->
+        <attr name="align">
+            <!--默认顶部对齐-->
+            <enum name="top" value="0" />
+            <!--居中对齐-->
+            <enum name="center" value="1" />
+            <!--底部对齐-->
+            <enum name="bottom" value="2" />
+        </attr>
 
+        <!--子view之间的统一间距值，可以与子view的margin值叠加-->
+        <attr name="gap" format="dimension"/>
+    </declare-styleable>
 </resources>
