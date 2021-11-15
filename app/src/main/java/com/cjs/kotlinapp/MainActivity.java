@@ -8,19 +8,26 @@ import android.view.View;
 import android.widget.Button;
 
 import com.cjs.threadpool.TPFactory;
+import com.cjs.ultraflowlayout.UltraFlowLayout;
 import com.cjs.widgets.dialog.MsgDialog;
 
 public class MainActivity extends AppCompatActivity {
-    private Button btn1, btn2, ed_keyboard,btn_tp;
+    private Button btn1, btn2, ed_keyboard, btn_tp, btn_center, btn_top, btn_bottom, btn_gap20;
+    private UltraFlowLayout ufl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ufl = findViewById(R.id.ufl);
         btn1 = findViewById(R.id.btn1);
         btn2 = findViewById(R.id.btn2);
         ed_keyboard = findViewById(R.id.ed_keyboard);
-        btn_tp=findViewById(R.id.btn_tp);
+        btn_tp = findViewById(R.id.btn_tp);
+        btn_bottom = findViewById(R.id.btn_bottom);
+        btn_center = findViewById(R.id.btn_center);
+        btn_gap20 = findViewById(R.id.btn_gap20);
+        btn_top = findViewById(R.id.btn_top);
 
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,5 +67,32 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btn_top.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ufl.setAlign(UltraFlowLayout.ALIGN_TOP);
+            }
+        });
+
+        btn_center.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ufl.setAlign(UltraFlowLayout.ALIGN_CENTER);
+            }
+        });
+
+        btn_bottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ufl.setAlign(UltraFlowLayout.ALIGN_BOTTOM);
+            }
+        });
+
+        btn_gap20.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ufl.setGapHorizontal(20);
+            }
+        });
     }
 }

@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.cjs.ultraflowlayout.UltraFlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ufl"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/cyan"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    app:gap_vertical="10dp"
     tools:context=".MainActivity">
 
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:tag="123"
         android:text="单按钮弹窗" />
 
@@ -31,6 +34,50 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="线程池模拟"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        android:text="属性动画测试"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fragment与Activity之间进行通信"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="蓝牙适配"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="WIFI状态监听测试"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="居中对齐"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="底部对齐"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="顶部对齐"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_gap20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="设置间距20dp"/>
 
 
 </com.cjs.ultraflowlayout.UltraFlowLayout>

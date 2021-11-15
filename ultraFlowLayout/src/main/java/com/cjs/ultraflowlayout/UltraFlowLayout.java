@@ -2,11 +2,9 @@ package com.cjs.ultraflowlayout;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,9 +47,13 @@ public class UltraFlowLayout extends ViewGroup {
     private @Align
     int align = ALIGN_TOP;
     /**
-     * 子View之间通用的间距，可以与其margin值叠加
+     * 子View之间通用的横向间距，可以与其margin值叠加
      */
-    private int gap;
+    private int gapHorizontal;
+    /**
+     * 子view之间的通用的纵向间距，可以与其margin值叠加
+     */
+    private int gapVertical;
 
     public UltraFlowLayout(Context context) {
         super(context);
@@ -85,7 +87,8 @@ public class UltraFlowLayout extends ViewGroup {
     private void initAttr(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         if (attrs != null) {
             TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.UltraFlowLayout, defStyleAttr, defStyleRes);
-            gap = array.getDimensionPixelOffset(R.styleable.UltraFlowLayout_gap, 0);
+            gapHorizontal = array.getDimensionPixelOffset(R.styleable.UltraFlowLayout_gap_horizontal, 0);
+            gapVertical = array.getDimensionPixelOffset(R.styleable.UltraFlowLayout_gap_vertical, 0);
             align = array.getInt(R.styleable.UltraFlowLayout_align, ALIGN_TOP);
             array.recycle();
         }
@@ -158,23 +161,23 @@ public class UltraFlowLayout extends ViewGroup {
             int childMarginBottom = mlp.bottomMargin;
             int childWidth = child.getMeasuredWidth();
             int childHeight = child.getMeasuredHeight();
-            int _childWidth = childMarginLeft + childWidth + childMarginRight + (currentColumnNo != 0 ? gap : 0);
-            int _childHeight = childMarginTop + childHeight + childMarginBottom;//child实际占用的高度空间，需要加上上下间距值
+            int _childWidth = childMarginLeft + childWidth + childMarginRight + (currentColumnNo != 0 ? gapHorizontal : 0);
             if (currentRowWidth + _childWidth > widthMax) {//换行
                 maxHeightArray.put(rows, currentRowMaxHeight);//换行时，先标记一下之前行的最大高度。哪个子元素的高度最大就去其作为行高
-                currentRowTop += currentRowMaxHeight;//标记下一行起始绘制的top
                 rows++;//行计数器自增，偏移至下一行
+                currentRowTop += currentRowMaxHeight;//标记下一行起始绘制的top
                 currentRowWidth = 0;//重置行宽
                 currentRowMaxHeight = 0;//重置行最大高度
                 currentColumnNo = 0;//重置列数
                 _childWidth = childMarginLeft + childWidth + childMarginRight;//关键点 换行时，重新计算这个child的实际占用宽度，这个宽在下面代码中会被复用。换行之前可能加上了gap，但是不一定那行放得下。换行后，从第一个开始，肯定是不要gap的。
             }
+            int _childHeight = childMarginTop + childHeight + childMarginBottom + (rows != 0 ? gapVertical : 0);//child实际占用的高度空间，需要加上上下间距值
             //默认状态
             currentRowMaxHeight = Math.max(currentRowMaxHeight, _childHeight);//当前child的实际占高与当前已经存在的最大行高作比较，取大的那个作为新行高
             //接下来就是获取这个child的左上角及右下角点坐标的位置了
             //需要注意的是，实际摆放需要考虑margin值。因为我们每个子View已经算出了总的占用空间，这个空间包含了margin.而视觉上是看不见margin的，所以实际摆放要去除这个空间的margin值
-            int l = currentRowWidth + childMarginLeft + (currentColumnNo != 0 ? gap : 0);
-            int t = currentRowTop + childMarginTop;
+            int l = currentRowWidth + childMarginLeft + (currentColumnNo != 0 ? gapHorizontal : 0);
+            int t = currentRowTop + childMarginTop + (rows != 0 ? gapVertical : 0);
             int r = l + childWidth;
             int b = t + childHeight;
             currentRowWidth += _childWidth;
@@ -247,18 +250,37 @@ public class UltraFlowLayout extends ViewGroup {
      *
      * @return 每行第一个没有间距
      */
-    public int getGap() {
-        return gap;
+    public int getGapHorizontal() {
+        return gapHorizontal;
     }
 
     /**
-     * 设置间距
+     * 设置横向间距 像素
      *
-     * @param gap 每行第一个没有间距,可以用padding设置
+     * @param gapHorizontal 每行第一个没有间距,可以用padding设置
      */
-    public void setGap(int gap) {
-        this.gap = gap;
+    public void setGapHorizontal(int gapHorizontal) {
+        this.gapHorizontal = gapHorizontal;
         requestLayout();
+    }
+
+    /**
+     * 获取当前子View的纵向间距通用值
+     *
+     * @return 纵向间距
+     */
+    public int getGapVertical() {
+        return gapVertical;
+    }
+
+    /**
+     * 获取当前子View的纵向间距通用值
+     * 第一行的元素没有纵向间距值，可用padding值代替
+     *
+     * @param gapVertical 纵向间距 像素
+     */
+    public void setGapVertical(int gapVertical) {
+        this.gapVertical = gapVertical;
     }
 
     /**

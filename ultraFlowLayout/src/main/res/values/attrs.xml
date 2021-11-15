@@ -11,7 +11,9 @@
             <enum name="bottom" value="2" />
         </attr>
 
-        <!--子view之间的统一间距值，可以与子view的margin值叠加-->
-        <attr name="gap" format="dimension"/>
+        <!--子view之间的统一间距值 横向，可以与子view的margin值叠加-->
+        <attr name="gap_horizontal" format="dimension"/>
+        <!--子view之间的统一间距值 纵向，可以与子view的margin值叠加-->
+        <attr name="gap_vertical" format="dimension"/>
     </declare-styleable>
 </resources>
