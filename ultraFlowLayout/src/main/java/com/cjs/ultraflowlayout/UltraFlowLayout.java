@@ -53,8 +53,6 @@ public class UltraFlowLayout extends ViewGroup {
      */
     private int gap;
 
-    private int widthMeasureSpec, heightMeasureSpec;
-
     public UltraFlowLayout(Context context) {
         super(context);
         initAttr(context, null, 0, 0);
@@ -95,7 +93,6 @@ public class UltraFlowLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        Log.d("FlowXX", "onMeasure");
         //1、关键步骤 测量所有子view 这样，后续才能从子view获取measuredWidth和measuredHeight
         measureChildren(widthMeasureSpec, heightMeasureSpec);
         //2、测量行宽 同时标记每行最大高度
@@ -192,12 +189,10 @@ public class UltraFlowLayout extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        Log.d("FlowXX", "onLayout");
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
             View child = getChildAt(i);
             RectX rec = (RectX) child.getTag();
-            Log.d("FlowXX", rec.toString());
             if (ALIGN_TOP == align) {
                 //因为measure阶段已经将所有的子View顶点位置标记出来了，所以如果是默认对齐方式，布局阶段就很简单了，直接取出标记进行摆放
                 child.layout(rec.left, rec.top, rec.right, rec.bottom);
@@ -219,12 +214,6 @@ public class UltraFlowLayout extends ViewGroup {
                 child.layout(rec.left, t0, rec.right, b0);
             }
         }
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        Log.d("FlowXX", "onDraw");
-        super.onDraw(canvas);
     }
 
     @Override
