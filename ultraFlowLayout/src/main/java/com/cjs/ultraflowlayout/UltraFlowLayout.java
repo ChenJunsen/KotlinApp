@@ -34,7 +34,7 @@ public class UltraFlowLayout extends ViewGroup {
      * 子View的对齐方式
      */
     private @Align
-    int align = Align.ALIGN_TOP;
+    int align = Align.TOP;
     /**
      * 子View之间通用的横向间距，可以与其margin值叠加
      */
@@ -78,7 +78,7 @@ public class UltraFlowLayout extends ViewGroup {
             TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.UltraFlowLayout, defStyleAttr, defStyleRes);
             gapHorizontal = array.getDimensionPixelOffset(R.styleable.UltraFlowLayout_gap_horizontal, 0);
             gapVertical = array.getDimensionPixelOffset(R.styleable.UltraFlowLayout_gap_vertical, 0);
-            align = array.getInt(R.styleable.UltraFlowLayout_align, Align.ALIGN_TOP);
+            align = array.getInt(R.styleable.UltraFlowLayout_align, Align.TOP);
             array.recycle();
         }
     }
@@ -185,23 +185,23 @@ public class UltraFlowLayout extends ViewGroup {
         for (int i = 0; i < childCount; i++) {
             View child = getChildAt(i);
             RectX rec = (RectX) child.getTag();
+            int _gapVertical = rec.row == 0 ? 0 : gapVertical;//第一行的元素不设置gap
             LayoutParams mlp = (LayoutParams) child.getLayoutParams();
             int mAlign = (AlignSelf.INHERIT == mlp.alignSelf) ? align : mlp.alignSelf;
-            if (Align.ALIGN_TOP == mAlign) {
+            if (Align.TOP == mAlign) {
                 //因为measure阶段已经将所有的子View顶点位置标记出来了，所以如果是默认对齐方式，布局阶段就很简单了，直接取出标记进行摆放
                 child.layout(rec.left, rec.top, rec.right, rec.bottom);
             } else {
                 int rowMaxHeight = maxHeightArray.get(rec.row);
                 int childHeight = child.getMeasuredHeight();
-                int childMarginTop = mlp.topMargin;
                 int t0 = 0, b0 = 0;
-                if (Align.ALIGN_CENTER == mAlign) {
-                    int centerOffset = (rowMaxHeight - childHeight) / 2;//计算出居中偏移量
-                    t0 = rec.top + centerOffset + childMarginTop;//在默认顶部居中模式下向下偏移
+                if (Align.CENTER == mAlign) {
+                    int centerOffset = (rowMaxHeight - childHeight - _gapVertical) / 2;//计算出居中偏移量
+                    t0 = rec.top + centerOffset;//在默认顶部居中模式下向下偏移
                     b0 = t0 + childHeight;
-                } else if (Align.ALIGN_BOTTOM == mAlign) {
-                    int bottomOffset = rowMaxHeight - childHeight;//计算出底部对齐偏移量
-                    t0 = rec.top + bottomOffset + childMarginTop;//在默认顶部居中模式下向下偏移
+                } else if (Align.BOTTOM == mAlign) {
+                    int bottomOffset = rowMaxHeight - childHeight - _gapVertical;//计算出底部对齐偏移量
+                    t0 = rec.top + bottomOffset;//在默认顶部居中模式下向下偏移
                     b0 = t0 + childHeight;
                 }
                 child.layout(rec.left, t0, rec.right, b0);
@@ -218,7 +218,7 @@ public class UltraFlowLayout extends ViewGroup {
     /**
      * 获取当前子View的对齐方式
      *
-     * @return {@link Align#ALIGN_TOP}、{@link Align#ALIGN_CENTER}、{@link Align#ALIGN_BOTTOM}
+     * @return {@link Align#TOP}、{@link Align#CENTER}、{@link Align#BOTTOM}
      */
     @SuppressWarnings("unused")
     public @Align
@@ -229,7 +229,7 @@ public class UltraFlowLayout extends ViewGroup {
     /**
      * 设置对齐方式
      *
-     * @param align {@link Align#ALIGN_TOP}、{@link Align#ALIGN_CENTER}、{@link Align#ALIGN_BOTTOM}
+     * @param align {@link Align#TOP}、{@link Align#CENTER}、{@link Align#BOTTOM}
      */
     public void setAlign(@Align int align) {
         this.align = align;
@@ -281,45 +281,45 @@ public class UltraFlowLayout extends ViewGroup {
     /**
      * 子控件的对齐方式限制
      */
-    @IntDef({Align.ALIGN_TOP, Align.ALIGN_CENTER, Align.ALIGN_BOTTOM})
+    @IntDef({Align.TOP, Align.CENTER, Align.BOTTOM})
     @Retention(RetentionPolicy.SOURCE)
     @SuppressWarnings("unused")
     public @interface Align {
         /**
          * 子View顶部对齐(默认)
          */
-        int ALIGN_TOP = 0;
+        int TOP = 0;
         /**
          * 子View居中对齐
          */
-        int ALIGN_CENTER = 1;
+        int CENTER = 1;
         /**
          * 子View底部对齐
          */
-        int ALIGN_BOTTOM = 2;
+        int BOTTOM = 2;
     }
 
     /**
      * 单独设置指定子View的对齐方式，其优先级高于{@link Align}
      */
-    @IntDef({Align.ALIGN_TOP, Align.ALIGN_CENTER, Align.ALIGN_BOTTOM, AlignSelf.INHERIT})
+    @IntDef({Align.TOP, Align.CENTER, Align.BOTTOM, AlignSelf.INHERIT})
     @Retention(RetentionPolicy.SOURCE)
     @SuppressWarnings("unused")
     public @interface AlignSelf {
         /**
          * 子View顶部对齐
          */
-        int ALIGN_TOP = Align.ALIGN_TOP;
+        int TOP = Align.TOP;
         /**
          * 子View居中对齐
          */
-        int ALIGN_CENTER = Align.ALIGN_CENTER;
+        int CENTER = Align.CENTER;
         /**
          * 子View底部对齐
          */
-        int ALIGN_BOTTOM = Align.ALIGN_BOTTOM;
+        int BOTTOM = Align.BOTTOM;
         /**
-         * 子View采用父布局的对齐方式进行对齐，父布局的默认对齐方式为{@link Align#ALIGN_TOP}
+         * 子View采用父布局的对齐方式进行对齐，父布局的默认对齐方式为{@link Align#TOP}
          */
         int INHERIT = -1;
     }
