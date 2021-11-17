@@ -70,21 +70,21 @@ public class MainActivity extends AppCompatActivity {
         btn_top.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ufl.setAlign(UltraFlowLayout.ALIGN_TOP);
+                ufl.setAlign(UltraFlowLayout.Align.ALIGN_TOP);
             }
         });
 
         btn_center.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ufl.setAlign(UltraFlowLayout.ALIGN_CENTER);
+                ufl.setAlign(UltraFlowLayout.Align.ALIGN_CENTER);
             }
         });
 
         btn_bottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ufl.setAlign(UltraFlowLayout.ALIGN_BOTTOM);
+                ufl.setAlign(UltraFlowLayout.Align.ALIGN_BOTTOM);
             }
         });
 

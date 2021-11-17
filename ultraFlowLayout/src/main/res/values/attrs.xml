@@ -12,8 +12,23 @@
         </attr>
 
         <!--子view之间的统一间距值 横向，可以与子view的margin值叠加-->
-        <attr name="gap_horizontal" format="dimension"/>
+        <attr name="gap_horizontal" format="dimension" />
         <!--子view之间的统一间距值 纵向，可以与子view的margin值叠加-->
-        <attr name="gap_vertical" format="dimension"/>
+        <attr name="gap_vertical" format="dimension" />
+    </declare-styleable>
+
+    <!--UltraFlowLayout下面的子View属性的设置-->
+    <declare-styleable name="UltraFlowLayout_Layout">
+        <!--子View自身的对齐方式 优先级高于父布局的align-->
+        <attr name="align_self">
+            <!--顶部对齐-->
+            <enum name="top" value="0" />
+            <!--居中对齐-->
+            <enum name="center" value="1" />
+            <!--底部对齐-->
+            <enum name="bottom" value="2" />
+            <!--使用父布局的对齐方式 默认-->
+            <enum name="inherit" value="-1" />
+        </attr>
     </declare-styleable>
 </resources>

@@ -24,18 +24,7 @@ import java.lang.annotation.RetentionPolicy;
  * @createTime 2021/11/11 17:18
  */
 public class UltraFlowLayout extends ViewGroup {
-    /**
-     * 子View顶部对齐(默认)
-     */
-    public static final int ALIGN_TOP = 0;
-    /**
-     * 子View居中对齐
-     */
-    public static final int ALIGN_CENTER = 1;
-    /**
-     * 子View底部对齐
-     */
-    public static final int ALIGN_BOTTOM = 2;
+
     /**
      * 标记每行的最大高度 并以此作为行高
      */
@@ -45,7 +34,7 @@ public class UltraFlowLayout extends ViewGroup {
      * 子View的对齐方式
      */
     private @Align
-    int align = ALIGN_TOP;
+    int align = Align.ALIGN_TOP;
     /**
      * 子View之间通用的横向间距，可以与其margin值叠加
      */
@@ -89,7 +78,7 @@ public class UltraFlowLayout extends ViewGroup {
             TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.UltraFlowLayout, defStyleAttr, defStyleRes);
             gapHorizontal = array.getDimensionPixelOffset(R.styleable.UltraFlowLayout_gap_horizontal, 0);
             gapVertical = array.getDimensionPixelOffset(R.styleable.UltraFlowLayout_gap_vertical, 0);
-            align = array.getInt(R.styleable.UltraFlowLayout_align, ALIGN_TOP);
+            align = array.getInt(R.styleable.UltraFlowLayout_align, Align.ALIGN_TOP);
             array.recycle();
         }
     }
@@ -153,8 +142,8 @@ public class UltraFlowLayout extends ViewGroup {
         int currentColumnNo = 0;//当前子View在其所在行的第几列
         for (int i = 0; i < childCount; i++) {
             View child = getChildAt(i);
-            //由于我们重写了generateLayoutParams方法，所以可以强转子view的布局参数为MarginLayoutParams
-            MarginLayoutParams mlp = (MarginLayoutParams) child.getLayoutParams();
+            //由于我们重写了generateLayoutParams方法，所以可以强转子view的布局参数为UltraFlowLayout.LayoutParams
+            LayoutParams mlp = (LayoutParams) child.getLayoutParams();
             int childMarginLeft = mlp.leftMargin;
             int childMarginRight = mlp.rightMargin;
             int childMarginTop = mlp.topMargin;
@@ -196,20 +185,21 @@ public class UltraFlowLayout extends ViewGroup {
         for (int i = 0; i < childCount; i++) {
             View child = getChildAt(i);
             RectX rec = (RectX) child.getTag();
-            if (ALIGN_TOP == align) {
+            LayoutParams mlp = (LayoutParams) child.getLayoutParams();
+            int mAlign = (AlignSelf.INHERIT == mlp.alignSelf) ? align : mlp.alignSelf;
+            if (Align.ALIGN_TOP == mAlign) {
                 //因为measure阶段已经将所有的子View顶点位置标记出来了，所以如果是默认对齐方式，布局阶段就很简单了，直接取出标记进行摆放
                 child.layout(rec.left, rec.top, rec.right, rec.bottom);
             } else {
                 int rowMaxHeight = maxHeightArray.get(rec.row);
                 int childHeight = child.getMeasuredHeight();
-                MarginLayoutParams mlp = (MarginLayoutParams) child.getLayoutParams();
                 int childMarginTop = mlp.topMargin;
                 int t0 = 0, b0 = 0;
-                if (ALIGN_CENTER == align) {
+                if (Align.ALIGN_CENTER == mAlign) {
                     int centerOffset = (rowMaxHeight - childHeight) / 2;//计算出居中偏移量
                     t0 = rec.top + centerOffset + childMarginTop;//在默认顶部居中模式下向下偏移
                     b0 = t0 + childHeight;
-                } else if (ALIGN_BOTTOM == align) {
+                } else if (Align.ALIGN_BOTTOM == mAlign) {
                     int bottomOffset = rowMaxHeight - childHeight;//计算出底部对齐偏移量
                     t0 = rec.top + bottomOffset + childMarginTop;//在默认顶部居中模式下向下偏移
                     b0 = t0 + childHeight;
@@ -222,13 +212,13 @@ public class UltraFlowLayout extends ViewGroup {
     @Override
     public LayoutParams generateLayoutParams(AttributeSet attrs) {
         //关键步骤 使得能把child的layoutParam转换为MarginLayoutParam
-        return new MarginLayoutParams(getContext(), attrs);
+        return new UltraFlowLayout.LayoutParams(getContext(), attrs);
     }
 
     /**
      * 获取当前子View的对齐方式
      *
-     * @return {@link #ALIGN_TOP}、{@link #ALIGN_CENTER}、{@link #ALIGN_BOTTOM}
+     * @return {@link Align#ALIGN_TOP}、{@link Align#ALIGN_CENTER}、{@link Align#ALIGN_BOTTOM}
      */
     @SuppressWarnings("unused")
     public @Align
@@ -239,7 +229,7 @@ public class UltraFlowLayout extends ViewGroup {
     /**
      * 设置对齐方式
      *
-     * @param align {@link #ALIGN_TOP}、{@link #ALIGN_CENTER}、{@link #ALIGN_BOTTOM}
+     * @param align {@link Align#ALIGN_TOP}、{@link Align#ALIGN_CENTER}、{@link Align#ALIGN_BOTTOM}
      */
     public void setAlign(@Align int align) {
         this.align = align;
@@ -291,10 +281,47 @@ public class UltraFlowLayout extends ViewGroup {
     /**
      * 子控件的对齐方式限制
      */
-    @IntDef({ALIGN_TOP, ALIGN_CENTER, ALIGN_BOTTOM})
+    @IntDef({Align.ALIGN_TOP, Align.ALIGN_CENTER, Align.ALIGN_BOTTOM})
     @Retention(RetentionPolicy.SOURCE)
+    @SuppressWarnings("unused")
     public @interface Align {
+        /**
+         * 子View顶部对齐(默认)
+         */
+        int ALIGN_TOP = 0;
+        /**
+         * 子View居中对齐
+         */
+        int ALIGN_CENTER = 1;
+        /**
+         * 子View底部对齐
+         */
+        int ALIGN_BOTTOM = 2;
+    }
 
+    /**
+     * 单独设置指定子View的对齐方式，其优先级高于{@link Align}
+     */
+    @IntDef({Align.ALIGN_TOP, Align.ALIGN_CENTER, Align.ALIGN_BOTTOM, AlignSelf.INHERIT})
+    @Retention(RetentionPolicy.SOURCE)
+    @SuppressWarnings("unused")
+    public @interface AlignSelf {
+        /**
+         * 子View顶部对齐
+         */
+        int ALIGN_TOP = Align.ALIGN_TOP;
+        /**
+         * 子View居中对齐
+         */
+        int ALIGN_CENTER = Align.ALIGN_CENTER;
+        /**
+         * 子View底部对齐
+         */
+        int ALIGN_BOTTOM = Align.ALIGN_BOTTOM;
+        /**
+         * 子View采用父布局的对齐方式进行对齐，父布局的默认对齐方式为{@link Align#ALIGN_TOP}
+         */
+        int INHERIT = -1;
     }
 
 
@@ -349,6 +376,44 @@ public class UltraFlowLayout extends ViewGroup {
         @SuppressWarnings("unused")
         public String toWHString() {
             return String.format("位置信息:[%1$s,%2$s] 长度:%3$s 宽度:%4$s", row, column, right - left, bottom - top);
+        }
+    }
+
+    /**
+     * 子View的携带参数
+     *
+     * @author JasonChen
+     * @email chenjunsen@outlook.com
+     * @createTime 2021/11/17 11:12
+     */
+    public static class LayoutParams extends MarginLayoutParams {
+        /**
+         * 对齐方式
+         */
+        public @AlignSelf
+        int alignSelf = AlignSelf.INHERIT;
+
+        public LayoutParams(Context c, AttributeSet attrs) {
+            super(c, attrs);
+            TypedArray array = c.obtainStyledAttributes(attrs, R.styleable.UltraFlowLayout_Layout);
+            alignSelf = array.getInt(R.styleable.UltraFlowLayout_Layout_align_self, AlignSelf.INHERIT);
+            array.recycle();
+        }
+
+        @SuppressWarnings("unused")
+        public LayoutParams(int width, int height) {
+            super(width, height);
+        }
+
+        @SuppressWarnings("unused")
+        public LayoutParams(MarginLayoutParams source) {
+            super(source);
+        }
+
+        @SuppressWarnings("unused")
+        public LayoutParams(LayoutParams source) {
+            super(source);
+            alignSelf = source.alignSelf;
         }
     }
 }
