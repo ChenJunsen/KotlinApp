@@ -12,11 +12,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/UltraFlowLayout" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/isemu" />
             <option value="$PROJECT_DIR$/thirdpart" />
             <option value="$PROJECT_DIR$/threadpool" />
-            <option value="$PROJECT_DIR$/ultraFlowLayout" />
             <option value="$PROJECT_DIR$/widgets" />
           </set>
         </option>

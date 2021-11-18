@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--指定子View缓存tag的key,不占用默认tag位置-->
+    <item name="rectId" type="id"/>
+    <!--批量布局的子View的显示文字的id名称-->
+    <item name="tagName" type="id" />
+</resources>

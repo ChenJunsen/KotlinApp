@@ -1,7 +1,7 @@
 rootProject.name = "KotlinApp"
 include ':app'
 include ':widgets'
-include ':ultraFlowLayout'
+include ':UltraFlowLayout'
 include ':threadpool'
 include ':threadpool'
 include ':isemu'

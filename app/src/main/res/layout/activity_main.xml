@@ -43,7 +43,7 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:layout_width="wrap_content"
-        android:layout_height="80dp"
+        android:layout_height="60dp"
         android:text="属性动画测试"/>
 
     <androidx.appcompat.widget.AppCompatButton

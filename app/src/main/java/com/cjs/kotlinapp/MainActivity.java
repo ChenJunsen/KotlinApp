@@ -5,7 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.GridView;
+import android.widget.ListView;
 
 import com.cjs.threadpool.TPFactory;
 import com.cjs.ultraflowlayout.UltraFlowLayout;
@@ -70,21 +73,21 @@ public class MainActivity extends AppCompatActivity {
         btn_top.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ufl.setAlign(UltraFlowLayout.Align.ALIGN_TOP);
+                ufl.setAlign(UltraFlowLayout.Align.TOP);
             }
         });
 
         btn_center.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ufl.setAlign(UltraFlowLayout.Align.ALIGN_CENTER);
+                ufl.setAlign(UltraFlowLayout.Align.CENTER);
             }
         });
 
         btn_bottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ufl.setAlign(UltraFlowLayout.Align.ALIGN_BOTTOM);
+                ufl.setAlign(UltraFlowLayout.Align.BOTTOM);
             }
         });
 

@@ -170,7 +170,8 @@ public class UltraFlowLayout extends ViewGroup {
             int r = l + childWidth;
             int b = t + childHeight;
             currentRowWidth += _childWidth;
-            child.setTag(new RectX(l, t, r, b, rows, currentColumnNo));//这里用到了一个技巧 因为layout时要传入左上右下四个数值，恰好系统的Rect就是存这四个值的模型。但是系统的Rect不能满足需求且不能被继承，所以仿写一个
+            //以静态id的形式设置tag,防止外部使用时占用默认tag
+            child.setTag(R.id.rectId, new RectX(l, t, r, b, rows, currentColumnNo));//这里用到了一个技巧 因为layout时要传入左上右下四个数值，恰好系统的Rect就是存这四个值的模型。但是系统的Rect不能满足需求且不能被继承，所以仿写一个
             if (i == childCount - 1) {//还需要注意的是，如果没换行，但是测完了，此时也要标记一下当前行的行高
                 maxHeightArray.put(rows, currentRowMaxHeight);
             }
@@ -184,7 +185,7 @@ public class UltraFlowLayout extends ViewGroup {
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
             View child = getChildAt(i);
-            RectX rec = (RectX) child.getTag();
+            RectX rec = (RectX) child.getTag(R.id.rectId);
             int _gapVertical = rec.row == 0 ? 0 : gapVertical;//第一行的元素不设置gap
             LayoutParams mlp = (LayoutParams) child.getLayoutParams();
             int mAlign = (AlignSelf.INHERIT == mlp.alignSelf) ? align : mlp.alignSelf;
